@@ -1,0 +1,38 @@
+<div class="table-responsive-xl mx-auto col-11 m-5">
+  <table class="table table-striped table-hover table-dark table-bordered text-center">
+    <thead class="text-uppercase">
+      <tr>
+        <th>fecha</th>
+        <th>paciente</th>
+        <th>profesional</th>
+        <th>especialidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let historia of listaHistorias">
+        <ng-container *ngIf='usuario != null'>
+          <td>{{historia.fechaTurno | date }}</td>
+          <td>{{historia.paciente}}</td>
+          <td>{{historia.profesional}}</td>
+          <td>{{historia.especialidad}}</td>
+          <td *ngIf='yo.rol === "Paciente"'>
+            <button data-toggle="modal" data-target="#modalHistoria" class="btn btn-primary" (click)='historiaAux = historia'>Detalle</button>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal fade" id="modalHistoria" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content bg-dark text-white text-center">
+      <div *ngFor='let item of historiaAux |keyvalue' class="row">
+        <ng-container *ngIf='item.key !== "reseñaPa" && item.key !== "id"'>
+          <label>{{item.key}}</label>
+          <p class="col" *ngIf='item.key !== "fecha"'>{{item.value}}</p>
+          <p class="col" *ngIf='item.key === "fecha"'>{{item.value |date}}</p>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

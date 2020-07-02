@@ -1,0 +1,108 @@
+<button class="btn btn-primary float-right" routerLink='Historias'></button>
+<div class="table-responsive-xl mx-auto col-11 m-5">
+  <div class="form-row p-1 text-center">
+    <div *ngIf='yo.rol ==="Admin"' class="col form-group form-row">
+      <label for="inpputEstado" class="col-form-label">Estado</label>
+      <div class="col">
+        <select class="custom-select" id="inpputEstado" name="estado" [(ngModel)]="fEstado">
+          <option value="Todos" selected>Todos</option>
+          <option value="Si">Habilitados</option>
+          <option value="No">No Habilitados</option>
+        </select>
+      </div>
+    </div>
+    <div *ngIf='yo.rol ==="Admin"' class="col form-group form-row">
+      <label for="inputRol" class="col-form-label">Rol</label>
+      <div class="col">
+        <select class="custom-select" id="inputRol" name="rol" [(ngModel)]="fRol">
+          <option value="Todos" selected>Todos</option>
+          <option value="Profesional">Profesional</option>
+          <option value="Paciente">Paciente</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+    </div>
+    <div class="col form-group form-row">
+      <label for="inputEmail" class="col-form-label">Email</label>
+      <div class="col">
+        <input type="text" class="form-control" id="inputEmail" name="rol" [(ngModel)]="fEmail" placeholder="email">
+      </div>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-success btn-block" (click)="filtrarLista()">Filtrar</button>
+    </div>
+  </div>
+  <table *ngIf='yo.rol === "Admin"' class="table table-striped table-hover table-dark table-bordered text-center">
+    <thead class="text-uppercase">
+      <tr>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of listadoAux">
+        <ng-container *ngIf='usuario != null'>
+          <td>{{ usuario.email }}</td>
+          <td>{{ usuario.rol }}</td>
+          <td>
+            <div class="form-row">
+              <p class="col text-center">{{ usuario.habilitado | uppercase }}</p>
+              <div class="col">
+                <button *ngIf='usuario.rol === "Profesional" && usuario.habilitado === "No"' class="btn btn-success" (click)='habilitarProfesional(usuario)'>Habilitar</button>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+  <table *ngIf='yo.rol === "Paciente"' class="table table-striped table-hover table-dark table-bordered text-center">
+    <thead class="text-uppercase">
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Especialidades</th>
+        <th>Horarios</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of listadoAux">
+        <ng-container *ngIf='usuario != null'>
+          <td>{{usuario.apellido}} {{usuario.nombre}}</td>
+          <td>{{ usuario.email }}</td>
+          <td>
+            <ul>
+              <li *ngFor='let especialidad of usuario.especialidades'>{{especialidad}}</li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li *ngFor='let horario of usuario.horarios'>{{horario}}</li>
+            </ul>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+  <table *ngIf='yo.rol === "Profesional"' class="table table-striped table-hover table-dark table-bordered text-center">
+    <thead class="text-uppercase">
+      <tr>
+        <th>nombre</th>
+        <th>Email</th>
+        <th>detalles</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of listadoAux">
+        <ng-container *ngIf='usuario != null'>
+          <td>{{usuario.apellido}} {{usuario.nombre}}</td>
+          <td>{{ usuario.email }}</td>
+          <td>
+            <button class="btn btn-primary">Ver Detalles</button>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>

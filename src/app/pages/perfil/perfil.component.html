@@ -1,0 +1,37 @@
+
+<div class="container d-flex h-100 w-100 align-items-center">
+  <div class="card mx-auto text-center bg-secondary w-75">
+    <div class="card-header bg-light">
+      <h1>Mi Perfil</h1>
+    </div>
+    <div *ngIf="usuario" class="card-body text-white">
+      <img [src]="this.usuario.imagen1" width="150px" height="150px" alt="" srcset="">
+      <img [src]="this.usuario.imagen2" width="150px" height="150px" alt="" srcset="">
+      <h5 class="card-title">Nombre: {{usuario.nombre}}</h5>
+      <h5 class="card-title">Apellido: {{usuario.apellido}}</h5>
+      <h5 class="card-title">Edad: {{edad}} años</h5>
+      <h5 class="card-title">Mail: {{usuario.email}}</h5>
+      <div *ngIf="usuario.rol=='Profesional'">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Especialidad</th>
+              <th scope="col">Duracion Turno</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of usuario.especialidades;index as i">
+              <td>{{i}}</td>
+              <td>{{item.descripcion}}</td>
+              <td>{{item.duracion}} min</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer bg-light">
+      
+    </div>
+  </div>
+</div>

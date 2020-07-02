@@ -1,0 +1,9 @@
+.categoria{
+	height: 200px;
+	border-radius: 8px;
+	margin: 5px;
+	display: flex;
+	align-items:  center;
+	justify-content: center;
+	font-size: 35px;
+}
