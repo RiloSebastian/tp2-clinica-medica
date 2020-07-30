@@ -14,6 +14,12 @@ Es quien va a atender a los pacientes y realizar las historias clínicas de esto
 #### Admin:
 Es el usuario con acceso a toda la información. puede ver todos los usuarios, encuestas, historias clínicas y hasta las notificaciones de todos los usuarios.ademas de esto, también va a poder habilitar a los profesionales y cambiar sus especialidades, y va a poder ver informes de diferentes tipos relacionados al funcionamiento del sistema. Solo puede ser creado por otro administrador.
 
+#### Usuarios registrados:
+- e: dementira@mail.com p:147741 rol: Profesional
+- e: dementira1@mail.com p:222222 rol: Profesional
+- e: admin@admin.com p:admin1 rol: administrador
+- e: admin1@admin.com p:admin2 rol: administrador
+
 ## Registro
 Un usuario que deba registrarse deberá completar correctamente el formulario de registro. tendrá la opción de elegir el tipo de usuario que es y definirá sus características propias si este las tiene. el formulario Tendrá 2 captchas presentes (propio y de google) que se podrán habilitar en cualquier momento. 
 Una vez completado el registro, el Paciente tendrá que entrar a la cuenta de correo electrónico que paso en el formulario para poder iniciar sesión. el Profesional por otro lado deberá esperar a que uno de los Administradores lo habilite
