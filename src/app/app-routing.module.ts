@@ -8,6 +8,9 @@ import { ListadosComponent } from './pages/listados/listados.component';
 import { TurnosComponent } from './pages/turnos/turnos.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { TablaHistoriasComponent } from './componentes/tabla-historias/tabla-historias.component';
+import { NotificacionesComponent } from './pages/notificaciones/notificaciones.component';
+import { AltaAdminComponent } from './pages/alta-admin/alta-admin.component';
+import { InformesComponent } from './pages/informes/informes.component';
 
 import { LogueadoGuard } from './guards/logueado.guard';
 import { NoLogueadoGuard } from './guards/no-logueado.guard';
@@ -17,10 +20,12 @@ const routes: Routes = [
 	{ path: 'Principal', component: PrincipalComponent, canActivate: [LogueadoGuard], data:{ animation: 'Principal'} },
 	{ path: 'Login', component: LoginComponent, canActivate: [NoLogueadoGuard], data:{ animation: 'Login'} },
 	{ path: 'Registro', component: RegistroComponent, canActivate: [NoLogueadoGuard], data:{ animation: 'Registro'} },
-	{ path: 'Listados', component: ListadosComponent, canActivate: [LogueadoGuard] },
-	{ path: 'Historias', component: TablaHistoriasComponent, canActivate: [LogueadoGuard] },
-	{ path: 'Turnos', component: TurnosComponent, canActivate: [LogueadoGuard] },
-	{ path: 'Perfil', component: PerfilComponent, canActivate: [LogueadoGuard] },
+	{ path: 'Listados', component: ListadosComponent, canActivate: [LogueadoGuard], data:{ animation: 'Listados'} },
+	{ path: 'Turnos', component: TurnosComponent, canActivate: [LogueadoGuard], data:{ animation: 'Turnos'} },
+	{ path: 'Perfil', component: PerfilComponent, canActivate: [LogueadoGuard], data:{ animation: 'Perfil'}},
+	{ path: 'Notificaciones', component: NotificacionesComponent, canActivate: [LogueadoGuard] },
+	{ path: 'Alta-Admin', component: AltaAdminComponent, canActivate: [LogueadoGuard] },
+	{ path: 'Informes', component: InformesComponent, canActivate: [LogueadoGuard] },
 ];
 
 @NgModule({

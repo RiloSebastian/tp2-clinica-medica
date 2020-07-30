@@ -1,8 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UsuarioService } from '../../servicios/usuario.service';
 import { TurnoService } from '../../servicios/turno.service';
+import { NotificacionService } from '../../servicios/notificacion.service';
 import { Turno } from '../../clases/turno';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Horario } from '../../clases/horario';
 
 @Component({
 	selector: 'app-alta-turno',
@@ -12,19 +14,25 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 export class AltaTurnoComponent implements OnInit {
 	@Input() usuario: any;
 	@Input() profesionales: Array<any>;
-
+	@ViewChild('ngForm', { static: false }) form: any;
 	public profesionalSeleccionado: any = null;
 	public profesionalAgendaAux: any = [];
 	public profesionalDias = [];
 	public profesionalHorarios = [];
+	public guardado = null;
+	public submit: boolean = false;
 	public turnoForm = new FormGroup({
-		paciente: new FormControl(''),
-		profesional: new FormControl(''),
-		especialidadI: new FormControl('', Validators.required),
-		diaI: new FormControl('', Validators.required),
-		horarioI: new FormControl('', Validators.required)
+		paciente: new FormControl(null),
+		profesional: new FormControl(null),
+		nombrePaciente: new FormControl(null),
+		nombreProfesional: new FormControl(null),
+		especialidadI: new FormControl(null, Validators.required),
+		diaI: new FormControl(null, Validators.required),
+		horarioI: new FormControl(null, Validators.required),
+		captcha: new FormControl(null, Validators.required)
 	});
-	constructor(private usuarios: UsuarioService, private turnos: TurnoService) { }
+
+	constructor(private usuarios: UsuarioService, private turnos: TurnoService, public notificaciones: NotificacionService) { }
 
 	ngOnInit(): void {
 	}
@@ -37,83 +45,50 @@ export class AltaTurnoComponent implements OnInit {
 		this.profesionalHorarios = [];
 		this.profesionalAgendaAux = [];
 		for (let dia of this.profesionalSeleccionado.horarios) {
-			let arr = [];
-			arr = dia.split(/hs|desde|hasta|,|las/i).join().split(/[\s,| ]+/);
-			arr.pop();
-			arr[0] = this.obtenerDiaNum(arr[0]); // arr: [1,'16:00','20:00']
+			let arr = [dia.dia,dia.desde,dia.hasta,dia.especialidad];
+			arr[0] = Horario.obtenerDiaNum(arr[0]); // arr: [1,'16:00','20:00',especialidad]
 			this.profesionalAgendaAux.push(arr);
 		}
-		this.profesionalDias = this.obtenerProyeccion();
-		this.filtrarDias()
+		this.turnoForm.controls.paciente.setValue(this.usuario.email);
+		this.turnoForm.controls.profesional.setValue(this.profesionalSeleccionado.email);
+		this.turnoForm.controls.nombrePaciente.setValue(this.usuario.apellido + ' ' + this.usuario.nombre);
+		this.turnoForm.controls.nombreProfesional.setValue(this.profesionalSeleccionado.apellido + ' ' + this.profesionalSeleccionado.nombre);
+		this.turnoForm.controls.diaI.setValue(null);
+		this.turnoForm.controls.horarioI.setValue(null);
+		this.turnoForm.controls.especialidadI.setValue(null);
 	}
 
-	//obtiene array de fechas hasta 15 dias en adelante
-	obtenerProyeccion() {
-		let dias = [];
-		let proyeccionDias = 1;
-		let fecha = new Date().setHours(0, 0, 0, 0);
-		while (proyeccionDias <= 15) {
-			dias.push(new Date(fecha));
-			fecha = fecha + (24 * 60 * 60000);
-			proyeccionDias++;
-		}
-		return dias;
+	obtenerEspecialidad() {
+		this.profesionalDias = [];
+		this.profesionalHorarios = [];
+		this.turnoForm.controls.diaI.setValue(null);
+		this.turnoForm.controls.horarioI.setValue(null);
+		this.profesionalDias = Horario.obtenerProyeccionCantDias(30);
+		this.filtrarDias(this.turnoForm.value.especialidadI)
 	}
 
 	//filtra la quincena para que solo se puedan elegir los dias que trabaja el profesional
-	filtrarDias() {
+	filtrarDias(especialidad) {
 		this.profesionalDias = this.profesionalDias.filter(dia => {
 			let numDia = dia.getDay();
-			if (this.profesionalAgendaAux.some(agendaDia => numDia == agendaDia[0])) {
+			if (this.profesionalAgendaAux.some(agendaDia => numDia === agendaDia[0] && especialidad['nombre'] === agendaDia[3])) {
 				return true;
 			}
 			return false;
 		});
 	}
 
-	//obtiene el numero del dia pasado
-	obtenerDiaNum(dia) {
-		let numDia = -1;
-		switch (dia) {
-			case "Lunes":
-				numDia = 1;
-				break;
-			case "Martes":
-				numDia = 2;
-				break;
-			case "Miercoles":
-				numDia = 3;
-				break;
-			case "Jueves":
-				numDia = 4;
-				break;
-			case "Viernes":
-				numDia = 5;
-				break;
-			case "Sabado":
-				numDia = 6;
-				break;
-			case "Domingo":
-				numDia = 0;
-				break;
-		}
-		return numDia;
-	}
-
 	//genera horarios DinamicaMente Para que el usuario Elija
-	elegirDia(aux) {
-		let dia = new Date(parseInt(aux));
-		this.turnoForm.value.diaI = dia;
+	elegirDia() {
+		let dia = new Date(parseInt(this.turnoForm.value.diaI));
 		this.profesionalHorarios = [];
 		let numD = dia.getDay();
 		let agendaDia = this.profesionalAgendaAux.find(agendaDia => agendaDia[0] == numD);
 		let horarioEntrada = new Date(dia).setHours(parseInt(agendaDia[1].split(':')[0]), parseInt(agendaDia[1].split(':')[1]));
 		let horarioSalida = new Date(dia).setHours(parseInt(agendaDia[2].split(':')[0]), parseInt(agendaDia[2].split(':')[1]));
-		while (horarioSalida % horarioEntrada !== 0) {
-			this.profesionalHorarios.push(new Date(horarioEntrada));
-			horarioEntrada = horarioEntrada + (15 * 60000);
-		}
+		this.profesionalHorarios = Horario.generarHorarios(this.turnoForm.value.especialidadI['duracion'], horarioEntrada, horarioSalida);
 		this.filtrarHorarios();
+		this.turnoForm.controls.horarioI.setValue(null);
 	}
 
 	async filtrarHorarios() {
@@ -134,7 +109,7 @@ export class AltaTurnoComponent implements OnInit {
 			return false;
 		});
 		this.profesionalHorarios = this.profesionalHorarios.filter((horario: Date) => {
-			if (turnosPart.some((turno: Turno) => horario.getTime() === turno.fecha)) {
+			if (turnosPart.some((turno: Turno) => horario.getTime() === turno.fecha) || horario.getTime() <= Date.now()) {
 				return false;
 			}
 			return true;
@@ -142,16 +117,47 @@ export class AltaTurnoComponent implements OnInit {
 	}
 
 	guardarTurno(turno) {
-		this.turnoForm.value.paciente = this.usuario.email;
-		this.turnoForm.value.profesional = this.profesionalSeleccionado.email;
-		this.turnos.guardarTurno(turno);
-		this.profesionalSeleccionado = {};
+		this.submit = true;
+		if (turno.status === 'VALID') {
+			turno.value.especialidadI = turno.value.especialidadI['nombre'];
+			this.turnos.guardarTurno(turno.value).then((ref) => {
+				this.enviarNotificacion(ref.id);
+				this.resetearForm();
+				this.guardado = true;
+				setTimeout(() => {
+					this.guardado = null;
+				}, 3500);
+			}).catch(() => {
+				this.guardado = false;
+				setTimeout(() => {
+					this.guardado = null;
+				}, 3500);
+			});
+		}
+	}
+
+	resetearForm() {
+		this.profesionalSeleccionado = null;
 		this.profesionalDias = [];
 		this.profesionalHorarios = [];
 		this.profesionalAgendaAux = [];
-
+		this.turnoForm.reset();
+		if (this.form !== undefined) {
+			this.form.resetForm();
+		}
+		this.submit = false;
 	}
 
-
+	enviarNotificacion(idTurno){
+		let notificacion:any = {
+			remitente: this.turnoForm.value.paciente,
+			destinatario: this.turnoForm.value.profesional,
+			nombreRemitente: this.turnoForm.value.nombrePaciente,
+			nombreDestinatario: this.turnoForm.value.nombreProfesional,
+			asunto: 'Nuevo',
+			referencia: '/Turnos',
+		}
+		this.notificaciones.guardarNotificacion(notificacion);
+	}
 
 }

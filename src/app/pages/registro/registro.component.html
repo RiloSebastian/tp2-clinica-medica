@@ -1,6 +1,5 @@
-<script *ngIf='!unCaptcha' src="https://www.google.com/recaptcha/api.js" async defer></script>
-<div class="contenedor">
-  <form role="form" #ngForm='ngForm' [formGroup]="registroForm" class="w-50 m-3">
+<div class="container-fluid contenedor">
+  <form role="form" #ngForm='ngForm' [formGroup]="registroForm" class="w-75 m-3">
     <div class="text-center">
       <i class="fa fa-user-plus" style="font-size: 150px;"></i>
       <h1 class="h3 mb-3 font-weight-normal">
@@ -13,7 +12,7 @@
       </label>
       <div class="col-md-9">
         <input type="text" class="form-control" id="inputName" formControlName="nombre" placeholder="Juan" required>
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.nombre.errors' class="text-danger">no se asigno un nombre</p>
+        <p *ngIf='ngForm.submitted && registroForm.controls.nombre.errors' class="text-danger">no se asigno un nombre</p>
       </div>
     </div>
     <div class="form-group row">
@@ -22,16 +21,7 @@
       </label>
       <div class="col-md-9">
         <input type="text" class="form-control" id="inputLastname" formControlName="apellido" placeholder="Perez" required>
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.apellido.errors' class="text-danger">no se asigno un apellido</p>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-md-3 col-form-label" for="inputDni">
-        Dni:
-      </label>
-      <div class="col-md-9">
-        <input type="number" class="form-control" id="inputdni" formControlName="dni" required min="0">
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.dni.errors' class="text-danger">no se asigno un dni</p>
+        <p *ngIf='ngForm.submitted && registroForm.controls.apellido.errors' class="text-danger">no se asigno un apellido</p>
       </div>
     </div>
     <div class="form-group row">
@@ -40,7 +30,7 @@
       </label>
       <div class="col-md-9">
         <input type="date" class="form-control" id="inputFecha" formControlName="nacimiento" required min="1900-01-01" [max]="fechaHoy()">
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.nacimiento.errors' class="text-danger">no se asigno una fecha de nacimiento</p>
+        <p *ngIf='ngForm.submitted && registroForm.controls.nacimiento.errors' class="text-danger">no se asigno una fecha de nacimiento</p>
       </div>
     </div>
     <div class="form-group row">
@@ -68,7 +58,7 @@
           <input #fileInp type="file" multiple name="imagen" accept='image/*' id="inputImg" class="custom-file-input" (change)='agregarImagenes($event.target.files)' required>
           <label class="custom-file-label" for="inputImg1">Elige 2 imagenes</label>
         </div>
-        <p *ngIf='cantImagenes != 2' class="text-danger">no se asigno la cantidad correcta de imagenes. deben ser especificamente 2</p>
+        <p *ngIf='(ngForm.submitted && (cantImagenes !== 2)) || (cantImagenes !== 2 && cantImagenes !== -1)' class="text-danger">no se asigno la cantidad correcta de imagenes. deben ser especificamente 2</p>
       </div>
     </div>
     <div class="form-group row">
@@ -81,7 +71,7 @@
           <option value="Paciente">Paciente</option>
           <option value="Profesional">Profesional</option>
         </select>
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.rol.errors' class="text-danger">no se selecciono un rol</p>
+        <p *ngIf='ngForm.submitted && registroForm.controls.rol.errors' class="text-danger">no se selecciono un rol</p>
       </div>
     </div>
     <ng-container *ngIf="registroForm.value.rol === 'Profesional'">
@@ -91,25 +81,33 @@
         </label>
         <div id="inputEspecialidades" class="col-md-9">
           <ul>
-            <li *ngFor='let especialidad of registroForm.value.especialidades' (click)='editarEspecialidad(especialidad)'>{{especialidad}}</li>
+            <li *ngFor='let especialidad of registroForm.value.especialidades' (click)='editarEspecialidad(especialidad)'>{{especialidad['nombre']}}. longitud de turno: {{especialidad['duracion']}}min.</li>
           </ul>
           <div class="form-group form-inline">
             <label for="iconNuevoE">Agregar Especialidad: </label>
             <div id="iconNuevoE" *ngIf='!nuevaEspecialidad; else especialidadNueva' class="ml-2">
-              <a (click)='nuevaEspecialidad = true'><i class="fa fa-plus text-success" style="font-size: 30px;"></i></a>
+              <button class="btn btn-success" (click)='nuevaEspecialidad = true'><i class="fa fa-plus" style="font-size: 20px;"></i></button>
             </div>
             <ng-template #especialidadNueva>
               <div id="iconNuevoE" class="input-group">
-                <input type="text" class="form-control" [(ngModel)]='especialidadItem' [ngModelOptions]="{standalone: true}">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Nombre</div>
+                </div>
+                <select class="custom-select" [(ngModel)]='nEspecialidad' [ngModelOptions]="{standalone: true}">
+                  <option *ngFor='let esp of espMock; let x = index' id="opcionN-{{x}}" [value]='esp' [selected]='x==="0"'>{{esp}}</option>
+                </select>
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Tiempo(m)</div>
+                </div>
+                <input type="number" class="form-control" [(ngModel)]='iEspecialidad' [ngModelOptions]="{standalone: true}" min="30" placeholder="tiempo/turno">
                 <div class="input-group-append">
-                  <button type='button' class="btn btn-danger" (click)='especialidadItem=""; nuevaEspecialidad= false; cambiarEspecialidad= false'>Cancelar</button>
-                  <button *ngIf='!cambiarEspecialidad' type='button' class="btn btn-success" (click)='agregarEspecialidad()'>Agregar</button>
-                  <button *ngIf='cambiarEspecialidad' type='button' class="btn btn-warning" (click)='agregarEspecialidad()'>Editar</button>
+                  <button type='button' class="btn btn-danger" (click)='nEspecialidad="CARDIOLOGÍA"; iEspecialidad=30; nuevaEspecialidad= false; cambiarEspecialidad= false' [textContent]='!cambiarEspecialidad?"Cancelar":"Borrar"'></button>
+                  <button type='button' class="btn btn-success" (click)='agregarEspecialidad()' [textContent]='!cambiarEspecialidad?"Agregar":"Guardar"'></button>
                 </div>
               </div>
             </ng-template>
           </div>
-          <p *ngIf='ngForm.submitted && this.registroForm.controls.especialidades.errors' class="text-danger">no se asigno ninguna especialidad</p>
+          <p *ngIf='ngForm.submitted && registroForm.controls.especialidades.errors' class="text-danger">no se asigno ninguna especialidad</p>
         </div>
       </div>
       <div class="form-group row">
@@ -118,49 +116,18 @@
         </label>
         <div id="inputHorarios" class="col-md-9">
           <ul>
-            <li *ngFor='let horario of registroForm.value.horarios'>{{horario}}</li>
+            <li *ngFor='let horario of registroForm.value.horarios'>{{horario.dia}}, desde las {{horario.desde}}hs hasta las {{horario.hasta}}hs, {{horario.especialidad}}</li>
           </ul>
-          <div class="form-inline">
-            <label for="iconNuevoH">Agregar Horario: </label>
+          <div *ngIf='!registroForm.controls.especialidades.errors' class="form-inline">
+            <label for="iconNuevoH">Establecer Horarios: </label>
             <div id="iconNuevoH" *ngIf='!nuevoHorario; else horarioNuevo' class="ml-2">
-              <a (click)='nuevoHorario = true'><i class="fa fa-plus text-primary" style="font-size: 30px;"></i></a>
+              <button class="btn btn-primary" (click)='nuevoHorario = true'><i class="fa fa-plus" style="font-size: 20px;"></i></button>
             </div>
           </div>
           <ng-template #horarioNuevo>
-            <div id="iconNuevoH" class="container border bg-dark rounded py-3 text-white">
-              <div *ngFor='let dia of semana; let i = index' class="form-group form-row pb-3">
-                <div class="col-md-3">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="checkDia{{i}}" [(ngModel)]="dia[0]" [ngModelOptions]="{standalone: true}" (change)='checkValue(dia[0])'>
-                    <label class="custom-control-label" for="checkDia{{i}}">{{dia[1]}}</label>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputDesde-{{i}}" class="col-form-label">Desde</label>
-                    <div class="col">
-                      <input id="inputDesde-{{i}}" type="time" [(ngModel)]='dia[2]' [ngModelOptions]="{standalone: true}" class="form-control custom-control">
-                    </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputHasta-{{i}}" class="col-form-label">Hasta</label>
-                    <div class="col">
-                      <input id="inputHasta-{{i}}" type="time" [(ngModel)]='dia[3]' [ngModelOptions]="{standalone: true}" class="form-control custom-control">
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="input-group form-row">
-                <div class="col-md">
-                  <button type='button' class="btn btn-danger btn-block" (click)='horarioItem=""; nuevoHorario= false'>Cancelar</button>
-                </div>
-                <div class="col-md">
-                  <button type='button' class="btn btn-success btn-block" (click)='generarHorario()'>Generar</button>
-                </div>
-              </div>
-            </div>
+            <app-alta-horarios [(nuevoHorario)]='nuevoHorario' [horarios]='registroForm.value.horarios' (horariosChange)='registroForm.controls.horarios.setValue($event)' [especialidades]='registroForm.value.especialidades'></app-alta-horarios>
           </ng-template>
-          <p *ngIf='ngForm.submitted && this.registroForm.controls.horarios.errors' class="text-danger">no se asigno ningun horario de atencion</p>
+          <p *ngIf='ngForm.submitted && registroForm.controls.horarios.errors' class="text-danger">no se asigno ningun horario de atencion</p>
         </div>
       </div>
     </ng-container>
@@ -170,7 +137,7 @@
       </label>
       <div class="col-md-9">
         <input type="email" class="form-control" id="inputEmail" formControlName="email" placeholder="usuario@email.com" autocomplete="username" required>
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.email.errors' class="text-danger">no se asigno un email</p>
+        <p *ngIf='ngForm.submitted && registroForm.controls.email.errors' class="text-danger">no se asigno un email</p>
       </div>
     </div>
     <div class="form-group row">
@@ -179,27 +146,23 @@
       </label>
       <div class="col-md-9">
         <input type="password" class="form-control" id="inputPassword" formControlName="pass" placeholder="contraseña" autocomplete="new-password" required>
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.pass.errors' class="text-danger">no se asigno una contraseña</p>
+        <p *ngIf='ngForm.submitted && registroForm.controls.pass.errors' class="text-danger">no se asigno una contraseña</p>
       </div>
     </div>
     <div class="form-group">
-      <div *ngIf='!unCaptcha'>
-        <re-captcha (resolved)="captcha($event)" formControlName="captcha" siteKey='6Lce36UZAAAAAHA_CEJRvzb0QQTt6k5sldGZR_Kz'>
-        </re-captcha>
-        <p *ngIf='ngForm.submitted && this.registroForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
-      </div>
-      <button type="button" class="btn btn-danger" (click)="unCaptcha = !unCaptcha">Deshabilitar Captcha</button>
+      <captcha (valorCaptcha)='registroForm.controls.captcha.setValue($event)'></captcha>
+      <p *ngIf='ngForm.submitted && registroForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
     </div>
     <div *ngIf='error' class="form-group text-center">
       <label class="text-danger">{{mensajeError}}</label>
     </div>
-    <div *ngIf='submit' class="text-center">
+    <div *ngIf='submit' class="form-group text-center my-3">
       <div class="spinner-border text-success" style="width: 5rem; height: 5rem;" role="status">
         <span class="sr-only">Loading...</span>
       </div>
     </div>
     <div class="form-group">
-      <button class="btn btn-success btn-block" type="submit" (click)="tryRegister(registroForm.value)">
+      <button class="btn btn-success btn-block" type="submit" (click)="tryRegister(registroForm)">
         registrarse
       </button>
     </div>

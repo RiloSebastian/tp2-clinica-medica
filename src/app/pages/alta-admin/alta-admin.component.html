@@ -1,0 +1,27 @@
+<div class="container-fluid w-75 mt-5">
+  <h1>Crear Nuevo Administrador</h1>
+  <form #ngForm=ngForm [formGroup]='registroForm' class="bg-dark text-white p-3">
+    <div class="form-group form-row">
+      <label class="col-md-3 col-form-label">Email</label>
+      <div class="col-md-9">
+        <input type="email" class="form-control" formControlName='email' autocomplete="username" required>
+      <p *ngIf='submit && registroForm.controls.email.errors' class="text-danger">No se ingreso una cuenta de Email</p>
+      </div>
+    </div>
+    <div class="form-group form-row">
+      <label class="col-md-3 col-form-label">Contraseña</label>
+      <div class="col-md-9">
+        <input type="password" class="form-control" formControlName='pass' autocomplete="new-password" required>
+      <p *ngIf='submit && registroForm.controls.pass.errors' class="text-danger">No se ingreso una contraseña</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <captcha (valorCaptcha)='registroForm.controls.captcha.setValue($event)'></captcha>
+      <p *ngIf='submit && registroForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
+    </div>
+    <div class="form-group clearfix">
+      <button type="submit" class="btn btn-success float-right" (click)='registrarAdmin(registroForm)'>Registrar</button>
+    </div>
+    <p *ngIf='creado !== null' [ngClass]='{"text-success":creado, "text-danger":!creado, "text-center":true}'>{{mensajeSubmit}}</p>
+  </form>
+</div>

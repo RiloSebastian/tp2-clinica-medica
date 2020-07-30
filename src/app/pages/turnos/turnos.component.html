@@ -1,67 +1,75 @@
-<div *ngIf='usuario.rol === "Paciente"' class="mx-auto col-11 m-5">
-  <div>
-    <h3 class="text-left text-uppercase">Turnos</h3>
-    <div *ngIf='usuarioTurnos != null' class="table-responsive-xl">
+<div *ngIf='usuarioTurnos != null;else spinner' class="mx-auto col-11 m-5">
+  <h3 class="text-left text-uppercase">Turnos</h3>
+  <div *ngIf='usuario.rol !== "Profesional"' class="form-row bg-dark my-3 p-2 mx-auto border rounded justyfy-content-center">
+    <div class="col-md m-1">
+      <input type="text" class="form-control" [(ngModel)]='fNombre' placeholder="Apellido Profesional">
+    </div>
+    <div class="col-md m-1">
+      <select class="custom-select" [(ngModel)]='fEspecialidad' required>
+        <option selected value=''> -- Elegir una Especialidad -- </option>
+        <option *ngFor='let especialidad of mockEsp' [value]="especialidad">{{especialidad}}</option>
+      </select>
+    </div>
+    <div class="col-md m-1">
+      <select class="custom-select" [(ngModel)]='fDia' required>
+        <option selected value='-1'> -- Elegir un dia de la semana -- </option>
+        <option *ngFor='let dia of semana;let i = index' [value]='i'>{{dia}}</option>
+      </select>
+    </div>
+    <div class="col-md-auto m-1">
+      <button class='btn btn-success' (click)='inicializar()'>Filtrar</button>
+    </div>
+  </div>
+  <ng-container *ngIf='usuarioTurnos.length > 0; else vacio'>
+    <div class="table-responsive-xl">
       <table class="table table-striped table-hover table-dark table-bordered text-center">
         <thead class="text-uppercase">
           <tr>
-            <th>Profesional</th>
+            <th *ngIf='usuario.rol !== "Profesional"'>Profesional</th>
+            <th *ngIf='usuario.rol !== "Paciente"'>Paciente</th>
             <th>Especialidad</th>
             <th>Fecha</th>
             <th>Estado</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let turno of usuarioTurnos" [appCambioColorTurno]='turno.estado'>
-            <td>{{ turno.profesional }}</td>
+          <tr *ngFor="let turno of usuarioTurnos" [id]='turno.id' [appCambioColorTurno]='turno.estado'>
+            <td *ngIf='usuario.rol !== "Profesional"'>{{ turno.nombreProfesional }}</td>
+            <td *ngIf='usuario.rol !== "Paciente"'>{{ turno.nombrePaciente }}</td>
             <td>{{ turno.especialidad }}</td>
-            <td>{{ turno.fecha | date:'medium' }}</td>
+            <td>{{ turno.fecha | date:'EEE dd/MM/yyyy HH:mm' }}hs</td>
             <td>
               {{ turno.estado }}
-               <button *ngIf='turno.estado === "Pendiente" || turno.estado === "Aceptado" || turno.estado === "Preparado"' class="btn btn-danger" (click)='cancelar(turno)'>Cancelar</button>
+              <button *ngIf='usuario.rol === "Profesional" && turno.estado === "Pendiente"' class="btn btn-primary" (click)='aceptar(turno)'>Aceptar</button>
+              <button *ngIf='usuario.rol === "Profesional" && turno.estado === "Preparado"' class="btn btn-success" (click)='atender(turno)' data-toggle="modal" data-target="#modalTurno">Atender</button>
+              <button *ngIf='usuario.rol === "Profesional" && (turno.estado === "Pendiente" || turno.estado === "Aceptado" || turno.estado === "Preparado")' class="btn btn-danger" (click)='cancelar(turno)' data-toggle="modal" data-target="#modalTurno">Cancelar</button>
+              <button *ngIf='usuario.rol === "Paciente" && (turno.estado === "Pendiente" || turno.estado === "Aceptado" || turno.estado === "Preparado")' class="btn btn-danger" (click)='cancelar(turno)'>Cancelar</button>
+              <button *ngIf='usuario.rol === "Paciente" && turno.estado === "Resuelto" && !turno.reseniaPaciente' class="btn btn-info" (click)='encuesta(turno)' data-toggle="modal" data-target="#modalTurno">Realizar Encuesta</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-  </div>
-  <button *ngIf='usuario !== {}' data-toggle="modal" data-target="#modalTurno" class="btn btn-success">Nuevo Turno</button>
+  </ng-container>
+  <ng-template #vacio>
+    <p class="justify-content-center">No hay Turnos Disponibles</p>
+  </ng-template>
+  <button *ngIf='usuario.rol === "Paciente" && usuario !== {}' data-toggle="modal" data-target="#modalTurno" (click)='nuevoTurno()' class="btn btn-success">Nuevo Turno</button>
 </div>
-<div *ngIf='usuario.rol === "Profesional"' class="mx-auto col-11 m-5">
-  <div>
-    <h3 class="text-left text-uppercase">Turnos</h3>
-    <div *ngIf='usuarioTurnos != null' class="table-responsive-xl">
-      <table class="table table-striped table-hover table-dark table-bordered text-center">
-        <thead class="text-uppercase">
-          <tr>
-            <th>Paciente</th>
-            <th>Especialidad</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let turno of usuarioTurnos" [appCambioColorTurno]='turno.estado'>
-            <td>{{ turno.paciente }}</td>
-            <td>{{ turno.especialidad }}</td>
-            <td>{{ turno.fecha | date:'medium' }}</td>
-            <td>
-              {{ turno.estado }}
-              <button *ngIf='turno.estado === "Pendiente"' class="btn btn-primary" (click)='aceptar(turno)'>Aceptar</button>
-              <button *ngIf='turno.estado === "Preparado"' class="btn btn-success" (click)='atender(turno)' data-toggle="modal" data-target="#modalTurno">Atender</button>
-              <button *ngIf='turno.estado === "Pendiente" || turno.estado === "Aceptado" || turno.estado === "Preparado"' class="btn btn-danger" (click)='cancelar(turno)'>Cancelar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+<ng-template #spinner>
+  <div class="d-flex justify-content-center m-5">
+    <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
   </div>
-</div>
-<div class="modal fade" id="modalTurno" tabindex="-1" role="dialog">
+</ng-template>
+<div class="modal fade" id="modalTurno" data-backdrop="static" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content bg-dark text-white">
-      <app-alta-turno *ngIf='usuario.rol === "Paciente"' [usuario]='usuario' [profesionales]='profesionales'></app-alta-turno>
-      <app-historia-clinica *ngIf='usuario.rol === "Profesional" && flagTurnoSel' [usuario]='usuario' [turnoSeleccionado]='turnoSeleccionado'></app-historia-clinica>
+      <app-alta-turno *ngIf='usuario.rol === "Paciente" && flagNuevoTurno' [usuario]='usuario' [profesionales]='profesionales'></app-alta-turno>
+      <app-alta-encuesta *ngIf='usuario.rol === "Paciente" && flagEncuestaPac' [(flag)]='flagEncuestaPac' [turnoSeleccionado]='turnoSeleccionado'></app-alta-encuesta>
+      <app-alta-historia-clinica *ngIf='usuario.rol === "Profesional" && turnoSeleccionado !== null && flagAtenderProf' [(flag)]='flagAtenderProf' [turnoSeleccionado]='turnoSeleccionado'></app-alta-historia-clinica>
+      <app-alta-mensaje-rechazo *ngIf='usuario.rol === "Profesional" && flagCancelarProf' [(flag)]='flagCancelarProf' [turnoSeleccionado]='turnoSeleccionado'></app-alta-mensaje-rechazo>
     </div>
   </div>
 </div>

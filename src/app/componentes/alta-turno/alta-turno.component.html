@@ -2,13 +2,10 @@
   <h5 class="modal-title" id="modal-titulo">
     Nuevo Turno
   </h5>
-  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
 </div>
 <div class="modal-body">
   <div class="row">
-    <div class="col-lg">
+    <div class="col-xl">
       <div class="table-responsive-lg">
         <table class="table table-striped table-hover table-dark table-bordered text-center">
           <thead>
@@ -24,12 +21,12 @@
                 <td>{{profesional.apellido}} {{profesional.nombre}}</td>
                 <td>
                   <ul>
-                    <li *ngFor='let especialidad of profesional.especialidades'>{{especialidad}}</li>
+                    <li *ngFor='let especialidad of profesional.especialidades'>{{especialidad['nombre']}}</li>
                   </ul>
                 </td>
                 <td>
                   <ul>
-                    <li *ngFor='let horario of profesional.horarios'>{{horario}}</li>
+                    <li *ngFor='let horario of profesional.horarios'>{{horario.dia}}, desde las {{horario.desde}}hs hasta las {{horario.hasta}}hs, {{horario.especialidad}}</li>
                   </ul>
                 </td>
               </ng-container>
@@ -38,19 +35,25 @@
         </table>
       </div>
     </div>
-    <div *ngIf='profesionalSeleccionado !== null' class="col-lg">
-      <form #ngForm='ngForm' [formGroup]="turnoForm">
+    <div *ngIf='profesionalSeleccionado !== null' class="col-xl">
+      <form role="form" #ngForm='ngForm' [formGroup]="turnoForm">
         <div class="form-group bg-dark">
+          <div class="form-group form-row">
+            <label class="col-md-3 form-control-label">Profesional</label>
+            <div class="col-md-9">
+              <label class="form-control-label">{{profesionalSeleccionado.apellido}} {{profesionalSeleccionado.nombre}}</label>
+            </div>
+          </div>
           <div class="form-group form-row">
             <label class="col-md-3 col-form-label" for="inputEspecialidad">
               Especialidad:
             </label>
             <div class="col-md-9">
-              <select class="custom-select" id="inputEspecialidad" name="especialidad" formControlName='especialidadI' required>
-                <option disabled selected value> -- Elegir una Especialidad -- </option>
-                <option *ngFor='let especialidad of profesionalSeleccionado.especialidades' [value]="especialidad">{{especialidad}}</option>
+              <select class="custom-select" formControlName='especialidadI' (change)='obtenerEspecialidad()' required>
+                <option disabled selected [value]='null'> -- Elegir una Especialidad -- </option>
+                <option *ngFor='let especialidad of profesionalSeleccionado.especialidades' [ngValue]="especialidad">{{especialidad['nombre']}}</option>
               </select>
-              <p *ngIf='ngForm.submitted && this.turnoForm.controls.especialidadI.errors' class="text-danger">no se selecciono una especialidad</p>
+              <p *ngIf='submit && turnoForm.controls.especialidadI.errors' class="text-danger">no se selecciono una especialidad</p>
             </div>
           </div>
           <div class="form-group form-row">
@@ -58,11 +61,11 @@
               Dia:
             </label>
             <div class="col-md-9">
-              <select class="custom-select" id="inputEspecialidad" name="dia" formControlName='diaI' (change)='elegirDia($event.target.value)' required>
-                <option disabled selected value> -- Elegir un Dia -- </option>
-                <option *ngFor='let dia of profesionalDias' [value]='dia.getTime()'>{{dia.getTime() | date:'EEE, MMM d, y'}}</option>
+              <select class="custom-select" formControlName='diaI' (change)='elegirDia()' required>
+                <option disabled selected value='null'> -- Elegir un Dia -- </option>
+                <option *ngFor='let dia of profesionalDias' [value]='dia.getTime()'>{{dia.getTime() | date:'EEE, dd/MM/yyyy'}}</option>
               </select>
-              <p *ngIf='ngForm.submitted && this.turnoForm.controls.diaI.errors' class="text-danger">no se selecciono un dia</p>
+              <p *ngIf='submit && turnoForm.controls.diaI.errors' class="text-danger">no se selecciono un dia</p>
             </div>
           </div>
           <div class="form-group form-row">
@@ -71,22 +74,28 @@
             </label>
             <div class="col-md-9">
               <select class="custom-select" id="inputEspecialidad" name="horario" formControlName='horarioI' required>
-                <option disabled selected value> -- Elegir un Horario -- </option>
+                <option disabled selected value='null'> -- Elegir un Horario -- </option>
                 <option *ngFor='let horario of profesionalHorarios' [value]='horario.getTime()'>{{horario.getTime() | date:'HH:mm'}}hs </option>
               </select>
-              <p *ngIf='ngForm.submitted && this.turnoForm.controls.horarioI.errors' class="text-danger">no se selecciono un horario</p>
+              <p *ngIf='submit && turnoForm.controls.horarioI.errors' class="text-danger">no se selecciono un horario</p>
             </div>
           </div>
+          <div class="form-group">
+            <captcha (valorCaptcha)='turnoForm.controls.captcha.setValue($event)'></captcha>
+            <p *ngIf='submit && turnoForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
+          </div>
         </div>
-        <button type="submit" class="btn btn-success float-right" data-dismiss="modal" (click)='guardarTurno(turnoForm.value)'>
+        <button type="submit" class="btn btn-success float-right" (click)='guardarTurno(turnoForm)'>
           Acepto
         </button>
       </form>
     </div>
   </div>
+  <p *ngIf='guardado === true' class="text-success justify-content-center">Se guardo el turno con exito</p>
+  <p *ngIf='guardado === false' class="text-danger justify-content-center">El turno no se guardo correctamente</p>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" data-dismiss="modal">
-    Cancelar
+  <button type="button" class="btn btn-danger" (click)='resetearForm()' data-dismiss="modal">
+    Cerrar
   </button>
 </div>

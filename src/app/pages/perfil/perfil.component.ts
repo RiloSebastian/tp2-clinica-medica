@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../servicios/auth.service';
+import { UsuarioService } from '../../servicios/usuario.service';
 
 @Component({
 	selector: 'app-perfil',
@@ -8,22 +9,19 @@ import { AuthService } from '../../servicios/auth.service';
 })
 export class PerfilComponent implements OnInit {
 
-	public usuario:any={};
-	public edad;
-	public sub;
-	constructor(public auth: AuthService) { }
+	public usuario: any = null;
+	public nuevoHorario = false;
+
+	constructor(public auth: AuthService, public usuarios: UsuarioService) { }
 
 	ngOnInit(): void {
 		this.auth.getUsuario(JSON.parse(localStorage.getItem('user')).uid).then(ref=>{
 			this.usuario = ref.data();
-			this.edad = this.años();
 		});
 	}
 
-	años(){
-		let aux = new Date()
-		let aux2 = new Date(this.usuario.nacimiento);
-		return (aux.getFullYear() - aux2.getFullYear());
+	guardarCambios(usuario){
+		this.usuarios.actualizarUsuario(usuario);
 	}
 
 }

@@ -1,0 +1,30 @@
+<script *ngIf='unCaptcha && cElegido === "Google"' src="https://www.google.com/recaptcha/api.js" async defer></script>
+<div *ngIf='unCaptcha'>
+  <nav>
+    <ul class="nav nav-pills" id="nav-tab">
+      <li class="nav-item">
+        <a class="nav-link active" id="nav-historias-tab" data-toggle="tab" href="#c-propio" role="tab" (click)='inicializarCanvas()'>Captcha Propio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="nav-usuarios-tab" data-toggle="tab" href="#c-google" role="tab" (click)='cambiarCaptcha()'>Captcha Google</a>
+      </li>
+    </ul>
+  </nav>
+  <div id="c-propio" *ngIf='unCaptcha && cElegido === "Propio"'>
+    <canvas #canvas width="200" height="50" style="border:2px solid #000000;"></canvas>
+    <div class="input-group mb-3">
+      <input #valorCaptcha type="text" class="form-control">
+      <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="button" (click)='validarCP(valorCaptcha.value)'>Validar</button>
+        <button class="btn btn-outline-danger" type="button" (click)='resetearCP()'>Resetar Captcha</button>
+      </div>
+    </div>
+    <p *ngIf='valido == false' class="text-danger">valor ingresado incorrecto. intente de nuevo</p>
+    <p *ngIf='valido == true' class="text-success">valor ingresado correctamente</p>
+  </div>
+  <div id="c-google" *ngIf='unCaptcha && cElegido === "Google"'>
+    <re-captcha (resolved)='captchaG($event)' siteKey='6Lce36UZAAAAAHA_CEJRvzb0QQTt6k5sldGZR_Kz'>
+    </re-captcha>
+  </div>
+</div>
+<button type="button" [class]='!unCaptcha?"btn btn-success":"btn btn-danger"' (click)='habilitarC()' [textContent]='!unCaptcha?"Habilitar":"Deshabilitar"'></button>

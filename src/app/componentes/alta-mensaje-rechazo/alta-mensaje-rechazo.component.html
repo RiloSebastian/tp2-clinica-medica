@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="modal-titulo">
+    Nuevo Turno
+  </h5>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div *ngIf='turnoSeleccionado !== null' class="col-xl">
+      <form role="form" #ngForm='ngForm' [formGroup]="mensajeForm">
+        <div class="form-group form-row">
+          <label class="col-md-3 col-form-label">Motivo de Cancelación</label>
+          <div class="col-md-9">
+            <textarea type="textarea" formControlName='motivo' class="form-control"></textarea>
+          </div>
+          <p *ngIf='submit && mensajeForm.controls.motivo.errors' class="text-danger">no se escribio el motivo de la cancelacion</p>
+        </div>
+        <div class="form-group">
+          <captcha (valorCaptcha)='mensajeForm.controls.captcha.setValue($event)'></captcha>
+          <p *ngIf='submit && mensajeForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
+        </div>
+        <button type="submit" class="btn btn-success float-right" (click)='enviarMensaje(mensajeForm)'>
+          Acepto
+        </button>
+      </form>
+    </div>
+    <p *ngIf='enviado === false' class="text-danger justify-content-center">El mensaje no se ha enviado correctamente</p>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)='resetearForm()'>
+    Cancelar
+  </button>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.js" integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM=" crossorigin="anonymous"></script>

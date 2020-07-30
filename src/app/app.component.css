@@ -1,4 +1,3 @@
 .rout {
-    height: 100%;
-	margin: 0;
+	flex: 1 1 auto;
 }

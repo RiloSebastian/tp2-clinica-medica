@@ -11,17 +11,20 @@ export class TurnoService {
 	public sub = []
 	constructor(private firestore: AngularFirestore) { }
 
-	guardarTurno(data){
-		this.db.collection('turnos').add({
+	guardarTurno(data) {
+		return this.db.collection('turnos').add({
+			fecha: parseInt(data.horarioI),
+			especialidad: data.especialidadI,
 			paciente: data.paciente,
 			profesional: data.profesional,
-			especialidad: data.especialidadI,
-			fecha: parseInt(data.horarioI),
-			estado: 'Pendiente'
+			nombrePaciente: data.nombrePaciente,
+			nombreProfesional: data.nombreProfesional,
+			estado: 'Pendiente',
+			reseniaPaciente: false
 		});
 	}
 
-	getTurnos(){
+	getTurnos() {
 		return this.db.collection('turnos').get();
 	}
 
@@ -40,19 +43,20 @@ export class TurnoService {
 	actualizarEstado(listaTurnos): Observable<boolean> {
 		return Observable.create(observer => {
 			this.comparar(listaTurnos);
+			observer.next(true);
 			setInterval(() => {
 				this.comparar(listaTurnos);
 				observer.next(true);
-			}, 10 * 60000);
+			}, 10 * 1000);
 		});
 	}
 
 	comparar(listaTurnos) {
-		let ahora = Date.now();
+		let ahora = new Date().setSeconds(0, 0);
 		for (let turno of listaTurnos) {
-			if ((turno.fecha) < (ahora + (15 * 60000)) && (turno.fecha) >= ahora && turno.estado === 'Aceptado') {
+			if (ahora >= turno.fecha && ahora < (turno.fecha + (30 * 60 * 1000)) && turno.estado === 'Aceptado') {
 				this.cambiarEstado(turno.id, 'Preparado');
-			} else if ((turno.fecha) < (ahora + (15 * 60000)) && (turno.estado !== 'Cancelado' && turno.estado !== 'Resuelto')) {
+			} else if (ahora >= (turno.fecha + (30 * 60 * 1000)) && (turno.estado !== 'Cancelado' && turno.estado !== 'Resuelto')) {
 				this.cambiarEstado(turno.id, 'Cancelado');
 			}
 		}
@@ -61,6 +65,12 @@ export class TurnoService {
 	async cambiarEstado(id, estado) {
 		await this.db.collection('turnos').doc(id).set({
 			estado: estado
+		}, { merge: true });
+	}
+
+	async guardarResenia(id) {
+		await this.db.collection('turnos').doc(id).set({
+			reseniaPaciente: true
 		}, { merge: true });
 	}
 }

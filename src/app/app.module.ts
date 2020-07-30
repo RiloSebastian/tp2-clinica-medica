@@ -28,12 +28,18 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CambioColorTurnoDirective } from './directives/cambio-color-turno.directive';
 import { AltaTurnoComponent } from './componentes/alta-turno/alta-turno.component';
-import { HistoriaClinicaComponent } from './componentes/historia-clinica/historia-clinica.component';
-import { MensajeRechazoComponent } from './componentes/mensaje-rechazo/mensaje-rechazo.component';
-import { MensajeReseniaComponent } from './componentes/mensaje-resenia/mensaje-resenia.component';
+import { AltaHistoriaClinicaComponent } from './componentes/alta-historia-clinica/alta-historia-clinica.component';
+import { AltaMensajeRechazoComponent } from './componentes/alta-mensaje-rechazo/alta-mensaje-rechazo.component';
 import { TablaHistoriasComponent } from './componentes/tabla-historias/tabla-historias.component';
-import { TablaMensajesComponent } from './componentes/tabla-mensajes/tabla-mensajes.component';
-
+import { TablaEncuestasComponent } from './componentes/tabla-encuestas/tabla-encuestas.component';
+import { TablaUsuariosComponent } from './componentes/tabla-usuarios/tabla-usuarios.component';
+import { AltaHorariosComponent } from './componentes/alta-horarios/alta-horarios.component';
+import { CaptchaComponent } from './componentes/captcha/captcha.component';
+import { AltaEncuestaComponent } from './componentes/alta-encuesta/alta-encuesta.component';
+import { NotificacionesComponent } from './pages/notificaciones/notificaciones.component';
+import { AltaAdminComponent } from './pages/alta-admin/alta-admin.component';
+import { InformesComponent } from './pages/informes/informes.component';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   declarations: [
@@ -48,11 +54,17 @@ import { TablaMensajesComponent } from './componentes/tabla-mensajes/tabla-mensa
     PerfilComponent,
     CambioColorTurnoDirective,
     AltaTurnoComponent,
-    HistoriaClinicaComponent,
-    MensajeRechazoComponent,
-    MensajeReseniaComponent,
+    AltaHistoriaClinicaComponent,
+    AltaMensajeRechazoComponent,
     TablaHistoriasComponent,
-    TablaMensajesComponent
+    TablaEncuestasComponent,
+    TablaUsuariosComponent,
+    AltaHorariosComponent,
+    CaptchaComponent,
+    AltaEncuestaComponent,
+    NotificacionesComponent,
+    AltaAdminComponent,
+    InformesComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +77,8 @@ import { TablaMensajesComponent } from './componentes/tabla-mensajes/tabla-mensa
     AngularFireModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    HighchartsChartModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]

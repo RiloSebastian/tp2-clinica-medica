@@ -1,0 +1,46 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    <nav class='col-lg-3 d-md-block bg-light sidebar p-1'>
+      <h5>Notificaciones</h5>
+      <div class="sidebar-sticky lateral">
+        <div *ngIf='listaNotif.length !== 0' class="list-group p-1 overflow-auto" role="tablist">
+          <ng-container *ngFor='let notif of listaNotif'>
+            <div [ngClass]='{"list-group-item list-group-item-action shadow":true, "bg-secondary text-white":notif["leido"]}' (click)='leerNotificacion(notif)'>
+              <div class="d-flex justify-content-between">
+                <small class="ml-auto">{{notif.fecha | date:'short'}}</small>
+              </div>
+              <div>
+                <p *ngIf='notif.asunto === "Nuevo"'>{{notif.nombreRemitente}} ha pedido un turno</p>
+                <p *ngIf='notif.asunto === "Aceptado"'>{{notif.nombreRemitente}} ha aceptado un turno</p>
+                <p *ngIf='notif.asunto === "Cancelado"'>{{notif.nombreRemitente}} ha cancelado un turno</p>
+                <p *ngIf='notif.asunto === "Encuesta"'>{{notif.nombreRemitente}} ha realizado una encuesta</p>
+                <p *ngIf='notif.asunto === "Historia"'>{{notif.nombreRemitente}} ha realizado una historia clinica</p>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </nav>
+    <div *ngIf='notifAux !== null' class="col d-flex align-items-center bg-secondary">
+      <div class="card mx-auto col-10 p-0">
+        <div class="card-header d-flex justify-content-between">
+          <h5 class="card-title">Fecha: {{notifAux.fecha | date:'short'}}</h5>
+          <button type="button" class="close" (click)='notifAux=null'>
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="card-body">
+          <p *ngIf='notifAux.asunto === "Nuevo"' class="card-text">{{notifAux.nombreRemitente}} ha pedido un turno</p>
+          <p *ngIf='notifAux.asunto === "Aceptado"' class="card-text">{{notifAux.nombreRemitente}} ha aceptado un turno</p>
+          <p *ngIf='notifAux.asunto === "Cancelado"' class="card-text">{{notifAux.nombreRemitente}} ha cancelado un turno</p>
+          <p *ngIf='notifAux.asunto === "Encuesta"' class="card-text">{{notifAux.nombreRemitente}} ha realizado una encuesta</p>
+          <p *ngIf='notifAux.asunto === "Historia"'>{{notifAux.nombreRemitente}} ha realizado una historia clinica</p>
+          <p *ngIf='notifAux.motivo'>Motivo: {{notifAux.motivo}}</p>
+          <a [href]='notifAux.referencia'>
+            <button class="btn btn-primary">Ver</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

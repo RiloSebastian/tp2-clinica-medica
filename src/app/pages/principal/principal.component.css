@@ -1,3 +1,9 @@
+
+.centrado{
+	height: 100%;
+	align-items: center;
+}
+
 .categoria{
 	height: 200px;
 	border-radius: 8px;

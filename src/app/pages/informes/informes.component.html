@@ -1,0 +1,47 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    <nav class='col-lg-3 bg-light sidebar overflow-auto p-1'>
+      <h5>Informes</h5>
+      <div class="sidebar-sticky">
+        <div class="list-group p-1 lateral" role="tablist">
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="ingreso-profesionales-list" role="tab" (click)='elegirInforme(1)'>Ingreso de Profesionales</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="profesionales-especialidad-list" role="tab" (click)='elegirInforme(2)'>Operaciones de Profesionales por especialidad</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="turnos-dias-list" role="tab" (click)='elegirInforme(3)'>Turnos por dia de Semana</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="medicos-turnos-list" role="tab" (click)='elegirInforme(4)'>Medicos por Cantidad de Turnos</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="medicos-dias-trabajados-list" role="tab" (click)='elegirInforme(5)'>Medicos por Cantidad de Dias Trabajados</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="visitas-list" role="tab" (click)='elegirInforme(6)'>Cantidad de Visitas</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="turnos-pacientes-list" role="tab" (click)='elegirInforme(7)'>Turnos de Pacientes</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="pacientes-especialidades-list" role="tab" (click)='elegirInforme(8)'>Cantidad de Pacientes antendidos por especialidades</a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="profesionales-especialidades-list" role="tab" (click)='elegirInforme(9)'>Cantidad de Profesionales por Especialidades </a>
+          <a class="list-group-item list-group-item-action" data-toggle="tab" id="encuesta-paciente-list" role="tab" (click)='elegirInforme(10)'>Respuestas de Encuesta de Paciente</a>
+        </div>
+      </div>
+    </nav>
+    <div class="col">
+      <div class="container my-2">
+        <highcharts-chart *ngIf='chartOptions !== null' [Highcharts]="highchart" [options]="chartOptions" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
+        <div *ngIf='controlPac' class="row">
+          <div class="form-group">
+            <select class="custom-select" [(ngModel)]='fPaciente'>
+              <option [value]="null" selected>Elegir Paciente</option>
+              <option *ngFor='let paciente of listaPacientes' [ngValue]="paciente">{{paciente.apellido}} {{paciente.nombre}}</option>
+            </select>
+          </div>
+        </div>
+        <div *ngIf='controlFecha' class="form-group">
+          <div class="form-group">
+            <label for="input-desde">Desde</label>
+            <input id="input-desde" type="datetime-local" class="form-control" [(ngModel)]='fDesdeFecha'>
+          </div>
+          <div class="form-group">
+            <label for="input-hasta">Hasta</label>
+            <input id="input-hasta" type="datetime-local" class="form-control" [(ngModel)]='fHastaFecha'>
+          </div>
+        </div>
+        <div class="form-group">
+          <button *ngIf='numeroInforme !== 0' class="btn btn-success text-center" (click)='generarGrafico()'>Generar Grafico</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

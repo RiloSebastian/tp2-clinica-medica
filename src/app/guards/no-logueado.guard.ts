@@ -12,6 +12,7 @@ export class NoLogueadoGuard implements CanActivate {
 
   canActivate(){
   	if(this.auth.isLoggedIn){
+  		console.log('aca');
   		this.router.navigate(['Principal']);
   		return false;
   	}

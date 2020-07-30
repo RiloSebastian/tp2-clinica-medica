@@ -10,29 +10,25 @@ export class HistoriaClinicaService {
 	constructor(private firestore: AngularFirestore) { }
 
 	guardarHistoria(datos) {
-		this.db.collection('historias').doc(datos.idTurno).set({
-			id: datos.idTurno,
-			fecha: datos.fechaTurno,
+		return this.db.collection('historias').doc(datos.id).set({
+			id: datos.id,
+			fecha: datos.fecha,
 			paciente: datos.paciente,
 			profesional: datos.profesional,
 			especialidad: datos.especialidad,
-			nombrePa: datos.nombrePa,
-			edadPa: datos.edadPa,
-			temperaturaPa: datos.temperaturaPa,
-			precionPa: datos.precionPa,
-			detallePa: datos.detallePa,
-			reseñaPa: false
+			nombrePaciente: datos.nombrePaciente,
+			nombreProfesional: datos.nombreProfesional,
+			edadPaciente: datos.edadPaciente,
+			temperaturaPaciente: datos.temperaturaPaciente,
+			presionPaciente: datos.presionPaciente,
+			detallePaciente: datos.detallePaciente,
 		}).then(() => {
-			datos.atributosDinamicos.forEach(dato => {
-				this.agregarCampoDin(datos.idTurno, dato[0], dato[1]);
-			})
+			if (datos.atributosDinamicos !== null && datos.atributosDinamicos.length > 0) {
+				this.db.collection('historias').doc(datos.id).set({
+					datosDinamicos: datos.atributosDinamicos,
+				}, { merge: true });
+			}
 		});
-	}
-
-	async agregarCampoDin(idhistoria, campo, valor) {
-		await this.db.collection('historias').doc(idhistoria).set({
-			[campo]: valor
-		}, { merge: true });
 	}
 
 	public traerUno(id) {
@@ -40,22 +36,15 @@ export class HistoriaClinicaService {
 	}
 
 	public traerTodos() {
-		return this.firestore.collection('turnos', ref => ref.orderBy('fecha', 'asc')).snapshotChanges();
+		return this.firestore.collection('historias', ref => ref.orderBy('fecha', 'asc')).snapshotChanges();
 	}
 
 	public traerProfesionales(usuario) {
-		return this.firestore.collection('turnos', ref => ref.where('profesional', '==', usuario).orderBy('fecha', 'asc')).snapshotChanges();
+		return this.firestore.collection('historias', ref => ref.where('profesional', '==', usuario).orderBy('fecha', 'asc')).snapshotChanges();
 	}
 
 	public traerPacientes(usuario) {
-		return this.firestore.collection('turnos', ref => ref.where('paciente', '==', usuario).orderBy('fecha', 'asc')).snapshotChanges();
-	}
-
-	async guardarReseña(id,reseña){
-		await this.db.collection('historias').doc(id).set({
-			reseña: reseña,
-			reseñaPa: true
-		}, { merge: true });
+		return this.firestore.collection('historias', ref => ref.where('paciente', '==', usuario).orderBy('fecha', 'asc')).snapshotChanges();
 	}
 
 }

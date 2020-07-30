@@ -1,0 +1,87 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="modal-titulo">
+    Encuesta de Turno:
+  </h5>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div *ngIf='turnoSeleccionado !== null' class="col-xl">
+      <form role="form" #ngForm='ngForm' [formGroup]="encuestaForm">
+        <div class="form-group bg-dark">
+          <div class="form-group">
+            <label>fue su primera vez siendo atendido por este profesional?</label>
+            <div class='ml-1'>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioPrimeraVez1" value="Si" [checked]="encuestaForm.value.primeraVez === 'Si'" (change)="cambiarPrimeraVez('Si')">
+                <label class="form-check-label" for="radioPrimeraVez1">Si</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioPrimeraVez2" value="No" [checked]="encuestaForm.value.primeraVez === 'No'" (change)="cambiarPrimeraVez('No')">
+                <label class="form-check-label" for="radioPrimeraVez2">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>noto algunas de estas situaciones con respecto al turno?</label>
+            <div class="form-check ml-1">
+              <input id="checkInadecuado" class="form-check-input" type="checkbox" [checked]="encuestaForm.value.profesionalInadecuado === 'Si'" (change)="cambiarSituaciones('Inadecuado')">
+              <label class="form-check-label" for="checkInadecuado">
+                el profesional actuo de manera inadecuada.
+              </label>
+            </div>
+            <div class="form-check ml-1">
+              <input id="checkSucio" class="form-check-input" type="checkbox" [checked]="encuestaForm.value.profesionalSucio === 'Si'" (change)="cambiarSituaciones('Sucio')">
+              <label class="form-check-label" for="checkSucio">
+                el profesional tenia su area de trabajo descuidada
+              </label>
+            </div>
+            <div class="form-check ml-1">
+              <input id="checkImpreciso" class="form-check-input" type="checkbox" [checked]="encuestaForm.value.profesionalImpreciso === 'Si'" (change)="cambiarSituaciones('Impreciso')">
+              <label class="form-check-label" for="checkImpreciso">
+                el profesional dio un diagnostico impreciso
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>cual es la probabilidad de que vuelva a pedir turno con este profesional?</label>
+            <div class='col-8 mx-auto'>
+              <input type="range" [(ngModel)]='probabilidadVolver' [ngModelOptions]='{standalone: true}' class="custom-range" min=1 max=5 (change)='cambiarProbabilidad()'>
+              <p class="text-center">valor: {{encuestaForm.value.probabilidadDeOtroTurno}}</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>como calificaria la atencion del profesional en general?</label>
+            <div class='text-center'>
+              <a (click)='calificar(1)'><span [ngClass]='{"fa fa-star":true, "checked": estrellaValue >= 1}'></span></a>
+              <a (click)='calificar(2)'><span [ngClass]='{"fa fa-star":true, "checked": estrellaValue >= 2}'></span></a>
+              <a (click)='calificar(3)'><span [ngClass]='{"fa fa-star":true, "checked": estrellaValue >= 3}'></span></a>
+              <a (click)='calificar(4)'><span [ngClass]='{"fa fa-star":true, "checked": estrellaValue >= 4}'></span></a>
+              <a (click)='calificar(5)'><span [ngClass]='{"fa fa-star":true, "checked": estrellaValue >= 5}'></span></a>
+            </div>
+            <p *ngIf='submit && encuestaForm.controls.calificacionGeneral.errors' class="text-danger">no se dio una calificacion</p>
+          </div>
+          <div class="form-group">
+            <label>conclusiones finales</label>
+            <textarea type="textarea" class='form-control' formControlName='conclusionesFinales'></textarea>
+            <p *ngIf='submit && encuestaForm.controls.conclusionesFinales.errors' class="text-danger">no se dio una conclusion final</p>
+          </div>
+          <div class="form-group">
+            <captcha (valorCaptcha)='encuestaForm.controls.captcha.setValue($event)'></captcha>
+            <p *ngIf='submit && encuestaForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success float-right" (click)='enviarEncuesta(encuestaForm)'>
+          Acepto
+        </button>
+      </form>
+    </div>
+  </div>
+  <p *ngIf='generado === true' class="text-success justify-content-center">Se envio la encuesta con exito</p>
+  <p *ngIf='generado === false' class="text-danger justify-content-center">La encuesta no se envio correctamente</p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)='resetearForm()'>
+    Cancelar
+  </button>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.js" integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM=" crossorigin="anonymous"></script>

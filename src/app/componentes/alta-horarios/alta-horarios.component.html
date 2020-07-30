@@ -1,0 +1,50 @@
+<div id="iconNuevoH" class="container border bg-dark rounded py-3 text-white">
+  <div *ngFor='let dia of semana; let i = index' class="pb-3">
+    <div class="form-group justify-content-center pb-2">
+      <div class="col-xl form-row">
+        <div class="col-lg-5">
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="checkDia{{i}}" [(ngModel)]="dia[0]" (change)='checkValue(dia[0])'>
+              <label class="custom-control-label" for="checkDia{{i}}">{{dia[1]}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-auto">
+          <div class="form-group">
+            <label for="inputEspecialidad-{{i}}">Especialidad:</label>
+            <select class="custom-select" id="inputEspecialidad-{{i}}" name="especialidad-{{i}}" (change)='elegirEspecialidad($event.target.value,dia)'>
+              <option *ngFor='let especialidad of especialidades; let x = index' id="opcion-{{x}}" [value]='x' [selected]='x==="0"'>{{especialidad['nombre']}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl form-row">
+        <div class="col-lg">
+          <div class="form-group">
+            <label for="inputDesde-{{i}}">Desde:</label>
+            <input id="inputDesde-{{i}}" type="time" class="form-control custom-control" [value]="dia[2]" min="08:00" [max]='dia[1] === "Sabado" || dia[1] === "Domingo"?"13:00":"18:00"' [step]='dia[5]*60' (change)='horarioDesde($event,i)'>
+          </div>
+        </div>
+        <div class="col-lg">
+          <div class="form-group">
+            <label for="inputHasta-{{i}}">Hasta:</label>
+            <input id="inputHasta-{{i}}" type="time" class="form-control custom-control" [value]="dia[3]" [min]='dia[2]' [max]='dia[1] === "Sabado" || dia[1] === "Domingo"?"14:00":"19:00"' [step]='dia[5]*60' (change)='horarioHasta($event,i)'>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <small class="form-text text-muted">
+    El rango de horarios disponibles es: <br>
+    de lunes a viernes de 08:00hs hasta 19:00hs <br>
+    de sabado a domingo de 08:00hs hasta 14:00hs</small>
+  <div class="input-group form-row">
+    <div class="col-xl">
+      <button type='button' class="btn btn-danger btn-block" (click)='cancelarHorario()'>Cancelar</button>
+    </div>
+    <div class="col-xl">
+      <button type='button' class="btn btn-success btn-block" (click)='generarHorario()'>Establecer</button>
+    </div>
+  </div>
+</div>
