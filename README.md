@@ -1,5 +1,7 @@
 # Clínica Medica
 
+[Clinica medica](https://clinica-online-rilo.herokuapp.com/)
+
 Una clínica online donde los pacientes y los profesionales se registran para el manejo de los turnos solicitados.
 
 ## Usuarios
