@@ -17,10 +17,23 @@ export class LoginComponent implements OnInit {
 	public error: boolean;
 	public mensajeError: string;
 	public submit= false;
+	public usuarioSelect: any = null;
+	public selectUsuarios:any = [
+		{email:'sebastianrilo@gmail.com'  ,clave:'123321', tipo:'Paciente' },
+		{email:'mnuodnksuogfuieruk@wqcefp.online'  ,clave:'444444', tipo:'Paciente' },
+		{email:'ezyuobbezflssdxwge@tsyefn.com'  ,clave:'555555', tipo:'Paciente' },
+		{email:'dementira@mail.com'  ,clave:'147741', tipo:'Profesional' },
+		{email:'admin@admin.com'  ,clave:'admin1', tipo:'Administrador' },
+	]
 
 	constructor(private auth: AuthService, private router: Router) {
 	}
 	ngOnInit(): void {
+	}
+
+	public seleccionarUsuario(usuario) {
+		this.loginForm.controls.email.setValue(usuario.email);
+		this.loginForm.controls.pass.setValue(usuario.clave);
 	}
 
 	public tryLogin(value) {

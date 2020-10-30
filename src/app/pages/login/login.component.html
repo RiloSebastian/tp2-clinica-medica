@@ -5,6 +5,10 @@
     <h1 class="h3 mb-3 font-weight-normal">
       Iniciar Sesion
     </h1>
+    <select class="custom-select" [(ngModel)]='usuarioSelect' [ngModelOptions]="{standalone: true}" (ngModelChange)='seleccionarUsuario($event)'>
+      <option [value]="null">Elige una opcion</option>
+      <option *ngFor='let usuario of selectUsuarios' [ngValue]='usuario'>{{usuario.email}} ({{usuario.tipo}})</option>
+    </select>
     <label class="sr-only" for="inputEmail">
       Correo Electronico
     </label>

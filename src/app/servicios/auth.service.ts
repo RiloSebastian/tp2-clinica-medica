@@ -15,19 +15,22 @@ export class AuthService {
 	public db = firebase.firestore();
 	public config = environment.firebaseConfig;
 	public secondaryApp: any = null;
+	public registrando: boolean = false;
 
 	constructor(private afAuth: AngularFireAuth, private storage: AngularFireStorage
 		, private firestore: AngularFirestore, private informe: InformeService) {
 		this.afAuth.onAuthStateChanged(user => {
 			if (user != null) {
-				this.getUsuario(user.uid).then(value => {
-					if (value.data().habilitado === 'Si') {
-						this.userProfile.next(value.data());
-						localStorage.setItem("user", JSON.stringify(user));
-					} else {
-						this.logout();
-					}
-				});
+				if (this.registrando === false) {
+					this.getUsuario(user.uid).then(value => {
+						if (value.data() != undefined) {
+							this.userProfile.next(value.data());
+							localStorage.setItem("user", JSON.stringify(user));
+						} else {
+							this.userProfile.next(null);
+						}
+					});
+				}
 			} else {
 				localStorage.setItem("user", null);
 				this.userProfile.next(null);
@@ -70,7 +73,9 @@ export class AuthService {
 	}
 
 	async register(dataRegistro) {
+		this.registrando = true;
 		return await this.afAuth.createUserWithEmailAndPassword(dataRegistro.email, dataRegistro.pass).then(data => {
+			console.log('registra y guarda');
 			this.db.collection('usuarios').doc(data.user.uid).set({
 				uid: data.user.uid,
 				email: data.user.email,
@@ -81,7 +86,18 @@ export class AuthService {
 				rol: dataRegistro.rol,
 				habilitado: 'No'
 			}).then(() => {
+				console.log('copia metadata');
+				let metadata: any = {
+					uid: data.user.uid,
+					email: data.user.email,
+					nombre: dataRegistro.nombre,
+					apellido: dataRegistro.apellido,
+					nacimiento: dataRegistro.nacimiento,
+					sexo: dataRegistro.sexo,
+					rol: dataRegistro.rol
+				};
 				if (dataRegistro.rol === 'Paciente') {
+					console.log('envia email');
 					data.user.sendEmailVerification();
 				} else if (dataRegistro.rol === 'Profesional') {
 					this.db.collection('usuarios').doc(data.user.uid).set({
@@ -89,15 +105,20 @@ export class AuthService {
 						horarios: dataRegistro.horarios,
 					}, { merge: true });
 				}
+				return metadata;
+			}).then(metadata => {
 				let im1 = dataRegistro.img1.name;
 				let im2 = dataRegistro.img2.name;
 				let extension1 = im1.split('.').reverse();
 				let extension2 = im2.split('.').reverse();
 				im1 = 'foto_perfil/' + dataRegistro.email + '_1.' + extension1[0];
 				im2 = 'foto_perfil/' + dataRegistro.email + '_2.' + extension2[0];
-				this.subirArchivo(im1, dataRegistro.img1, 'imagen1', data.user.uid).then(() => {
-					this.subirArchivo(im2, dataRegistro.img2, 'imagen2', data.user.uid);
+				this.subirArchivo(im1, dataRegistro.img1, 'imagen1', data.user.uid, metadata).then(() => {
+					this.subirArchivo(im2, dataRegistro.img2, 'imagen2', data.user.uid, metadata);
 				});
+			}).then(() => {
+				this.logout();
+				this.registrando = false;
 			});
 		});
 	}
@@ -115,13 +136,15 @@ export class AuthService {
 		return true;
 	}
 
-	async subirArchivo(nombreArchivo: string, datos: any, nombreCampo: string, uid) {
-		return await this.storage.upload(nombreArchivo, datos).then(imagen => {
+	async subirArchivo(nombreArchivo: string, datos: any, nombreCampo: string, uid, metadata) {
+		return await this.storage.upload(nombreArchivo, datos, { customMetadata: metadata }).then(imagen => {
 			imagen.ref.getDownloadURL().then(data => {
 				this.db.collection('usuarios').doc(uid).set({
 					[nombreCampo]: data,
 				}, { merge: true });
 			});
+			return imagen;
+		}).then(imagen => {
 		});
 	}
 
