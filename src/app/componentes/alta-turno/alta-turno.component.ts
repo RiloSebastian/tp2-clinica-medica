@@ -58,9 +58,11 @@ export class AltaTurnoComponent implements OnInit {
 		this.turnoForm.controls.especialidadI.setValue(null);
 	}
 
-	obtenerEspecialidad() {
+	//obtiene especialidades
+	obtenerEspecialidad(especialidad) {
 		this.profesionalDias = [];
 		this.profesionalHorarios = [];
+		this.turnoForm.controls.especialidadI.setValue(especialidad);
 		this.turnoForm.controls.diaI.setValue(null);
 		this.turnoForm.controls.horarioI.setValue(null);
 		this.profesionalDias = Horario.obtenerProyeccionCantDias(30);
@@ -79,7 +81,8 @@ export class AltaTurnoComponent implements OnInit {
 	}
 
 	//genera horarios DinamicaMente Para que el usuario Elija
-	elegirDia() {
+	elegirDia(diaInput) {
+		this.turnoForm.controls.diaI.setValue(diaInput);
 		let dia = new Date(parseInt(this.turnoForm.value.diaI));
 		this.profesionalHorarios = [];
 		let numD = dia.getDay();
@@ -114,6 +117,11 @@ export class AltaTurnoComponent implements OnInit {
 			}
 			return true;
 		});
+	}
+
+	turnoRapido(){
+		this.elegirDia(this.profesionalDias[0].getTime());
+		this.turnoForm.controls.horarioI.setValue(this.profesionalHorarios[0].getTime());
 	}
 
 	guardarTurno(turno) {

@@ -3,96 +3,69 @@
     Nuevo Turno
   </h5>
 </div>
-<div class="modal-body">
-  <div class="row">
-    <div class="col-xl">
-      <div class="table-responsive-lg">
-        <table class="table table-striped table-hover table-dark table-bordered text-center">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Especialidades</th>
-              <th>Horarios</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor='let profesional of profesionales' (click)='elegirProfesional(profesional)'>
-              <ng-container *ngIf='profesional.habilitado === "Si"'>
-                <td>{{profesional.apellido}} {{profesional.nombre}}</td>
-                <td>
-                  <ul>
-                    <li *ngFor='let especialidad of profesional.especialidades'>{{especialidad['nombre']}}</li>
-                  </ul>
-                </td>
-                <td>
-                  <ul>
-                    <li *ngFor='let horario of profesional.horarios'>{{horario.dia}}, desde las {{horario.desde}}hs hasta las {{horario.hasta}}hs, {{horario.especialidad}}</li>
-                  </ul>
-                </td>
-              </ng-container>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<div class="modal-body text-dark">
+  <form role="form" #ngForm='ngForm' [formGroup]="turnoForm">
+    <div *ngIf='turnoForm.value.especialidadI !== null' class="form-group">
+      <button type="submit" class="btn btn-warning text-left" (click)='turnoRapido()'>
+        Turno Rapido
+      </button>
     </div>
-    <div *ngIf='profesionalSeleccionado !== null' class="col-xl">
-      <form role="form" #ngForm='ngForm' [formGroup]="turnoForm">
-        <div class="form-group bg-dark">
-          <div class="form-group form-row">
-            <label class="col-md-3 form-control-label">Profesional</label>
-            <div class="col-md-9">
-              <label class="form-control-label">{{profesionalSeleccionado.apellido}} {{profesionalSeleccionado.nombre}}</label>
-            </div>
+    <div class="row mx-1">
+      <span *ngIf='turnoForm.value.profesional !== null' class="badge badge-pill badge-primary mx-1">{{turnoForm.value.nombreProfesional}}</span>
+      <span *ngIf='turnoForm.value.especialidadI !== null' class="badge badge-pill badge-primary mx-1">{{turnoForm.value.especialidadI.nombre}}</span>
+      <span *ngIf='turnoForm.value.diaI !== null' class="badge badge-pill badge-primary mx-1">{{ turnoForm.value.diaI | date:'EEE, dd/MM/yyyy'}}</span>
+      <span *ngIf='turnoForm.value.horarioI !== null' class="badge badge-pill badge-primary mx-1">{{turnoForm.value.horarioI | date:'HH:mm'}}hs</span>
+    </div>
+    <div class="contenedor-overflow">
+      <div class="row m-3">
+        <div class="col-3">
+          <div class="list-group">
+            <li class="list-group-item list-group-item-primary">Elegir un profesional</li>
+            <a *ngFor='let profesional of profesionales' class="list-group-item list-group-item-action" (click)='elegirProfesional(profesional)'>
+              <ng-container *ngIf='profesional.habilitado === "Si"'>
+                {{profesional.apellido}} {{profesional.nombre}}
+              </ng-container>
+            </a>
           </div>
-          <div class="form-group form-row">
-            <label class="col-md-3 col-form-label" for="inputEspecialidad">
-              Especialidad:
-            </label>
-            <div class="col-md-9">
-              <select class="custom-select" formControlName='especialidadI' (change)='obtenerEspecialidad()' required>
-                <option disabled selected [value]='null'> -- Elegir una Especialidad -- </option>
-                <option *ngFor='let especialidad of profesionalSeleccionado.especialidades' [ngValue]="especialidad">{{especialidad['nombre']}}</option>
-              </select>
-              <p *ngIf='submit && turnoForm.controls.especialidadI.errors' class="text-danger">no se selecciono una especialidad</p>
-            </div>
+          <p *ngIf='submit && turnoForm.controls.profesional.errors' class="text-danger">no se selecciono un profesional</p>
+        </div>
+        <div *ngIf='turnoForm.value.profesional !== null' class="col-3">
+          <div class="list-group">
+            <li class="list-group-item list-group-item-primary">Elegir una especialidad</li>
+            <a *ngFor='let especialidad of profesionalSeleccionado.especialidades' class="list-group-item list-group-item-action" (click)='obtenerEspecialidad(especialidad)'>
+              {{especialidad.nombre}}
+            </a>
           </div>
-          <div class="form-group form-row">
-            <label class="col-md-3 col-form-label" for="inputEspecialidad">
-              Dia:
-            </label>
-            <div class="col-md-9">
-              <select class="custom-select" formControlName='diaI' (change)='elegirDia()' required>
-                <option disabled selected value='null'> -- Elegir un Dia -- </option>
-                <option *ngFor='let dia of profesionalDias' [value]='dia.getTime()'>{{dia.getTime() | date:'EEE, dd/MM/yyyy'}}</option>
-              </select>
-              <p *ngIf='submit && turnoForm.controls.diaI.errors' class="text-danger">no se selecciono un dia</p>
-            </div>
-          </div>
-          <div class="form-group form-row">
-            <label class="col-md-3 col-form-label" for="inputEspecialidad">
-              Horarios:
-            </label>
-            <div class="col-md-9">
-              <select class="custom-select" id="inputEspecialidad" name="horario" formControlName='horarioI' required>
-                <option disabled selected value='null'> -- Elegir un Horario -- </option>
-                <option *ngFor='let horario of profesionalHorarios' [value]='horario.getTime()'>{{horario.getTime() | date:'HH:mm'}}hs </option>
-              </select>
-              <p *ngIf='submit && turnoForm.controls.horarioI.errors' class="text-danger">no se selecciono un horario</p>
-            </div>
-          </div>
-          <div class="form-group">
-            <captcha (valorCaptcha)='turnoForm.controls.captcha.setValue($event)'></captcha>
-            <p *ngIf='submit && turnoForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
+          <p *ngIf='submit && turnoForm.controls.especialidadI.errors' class="text-danger">no se selecciono una especialidad</p>
+        </div>
+        <div *ngIf='turnoForm.value.especialidadI !== null' class="col-3">
+          <div class="list-group">
+            <li class="list-group-item list-group-item-primary">Elegir un dia</li>
+            <a *ngFor='let dia of profesionalDias' class="list-group-item list-group-item-action" (click)='elegirDia(dia.getTime())'>
+              {{dia.getTime() | date:'EEE, dd/MM/yyyy'}}
+            </a>
+            <p *ngIf='submit && turnoForm.controls.diaI.errors' class="text-danger">no se selecciono un dia</p>
           </div>
         </div>
-        <button type="submit" class="btn btn-success float-right" (click)='guardarTurno(turnoForm)'>
-          Acepto
-        </button>
-      </form>
+        <div *ngIf='turnoForm.value.diaI !== null' class="col-3">
+          <div class="list-group">
+            <li class="list-group-item list-group-item-primary">Elegir un horario</li>
+            <a *ngFor='let horario of profesionalHorarios' class="list-group-item list-group-item-action" (click)='turnoForm.controls.horarioI.setValue(horario.getTime())'>
+              {{horario.getTime() | date:'HH:mm'}}hs
+            </a>
+          </div>
+          <p *ngIf='submit && turnoForm.controls.horarioI.errors' class="text-danger">no se selecciono un horario</p>
+        </div>
+      </div>
     </div>
-  </div>
-  <p *ngIf='guardado === true' class="text-success justify-content-center">Se guardo el turno con exito</p>
-  <p *ngIf='guardado === false' class="text-danger justify-content-center">El turno no se guardo correctamente</p>
+    <div class="form-group">
+      <captcha (valorCaptcha)='turnoForm.controls.captcha.setValue($event)'></captcha>
+      <p *ngIf='submit && turnoForm.controls.captcha.errors' class="text-danger">no se verifica el captcha</p>
+    </div>
+    <button type="submit" class="btn btn-success float-right" (click)='guardarTurno(turnoForm)'>
+      Acepto
+    </button>
+  </form>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-danger" (click)='resetearForm()' data-dismiss="modal">
