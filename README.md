@@ -16,11 +16,7 @@ Es quien va a atender a los pacientes y realizar las historias clínicas de esto
 #### Admin:
 Es el usuario con acceso a toda la información. puede ver todos los usuarios, encuestas, historias clínicas y hasta las notificaciones de todos los usuarios.ademas de esto, también va a poder habilitar a los profesionales y cambiar sus especialidades, y va a poder ver informes de diferentes tipos relacionados al funcionamiento del sistema. Solo puede ser creado por otro administrador.
 
-#### Usuarios registrados:
-- e: dementira@mail.com p:147741 rol: Profesional
-- e: dementira1@mail.com p:222222 rol: Profesional
-- e: admin@admin.com p:admin1 rol: administrador
-- e: admin1@admin.com p:admin2 rol: administrador
+![](./src/assets/login-clinica.gif)login a la pagina web
 
 ## Registro
 Un usuario que deba registrarse deberá completar correctamente el formulario de registro. tendrá la opción de elegir el tipo de usuario que es y definirá sus características propias si este las tiene. el formulario Tendrá 2 captchas presentes (propio y de google) que se podrán habilitar en cualquier momento. 
@@ -33,6 +29,10 @@ una vez elegido el horario se enviara un aviso al profesional de lo sucedido y e
 
 Si el profesional lo atiende, el turno sera Resuelto, de lo contrario sera considerado Cancelado. al Igual que los Pacientes el Profesional podrá cancelar cualquier turno suyo en cualquier momento pero tendrá que explicar el motivo de cancelación. este motivo se podrá visualizar en la pestaña de notificaciones, donde se almacenan y muestran todos los avisos de operaciones relacionadas a turnos donde participa el usuario;
 
+![](./src/assets/sacar-turno-manual-clinica.gif)carga de turno de forma manual
+
+![](./src/assets/sacar-turno-rapido-clinica.gif)carga de turno usando la funcion de turno rapido
+
 ## Generación de la Historia Clínica
 Al atender al paciente, el profesional deberá completar una historia clínica 
 donde se darán a conocer características del Paciente. se completaran campos obligatorios y otros opcionales utilizando diferentes controles de entrada y finalmente el Profesional dará un breve detalle del turno resuelto. una vez hecho todo esto se generara la historia clínica que podrá ser vista por el Paciente 
@@ -42,6 +42,8 @@ al Resolver un turno, el paciente tendrá la opción de completar una encuesta s
 
 ## Obtención de Informes
 Un Usuario administrador tiene la capacidad de solicitar información en forma de gráficos. el es el único que puede verlos y podrá descargar estos informes. en ellos se muestra información sobre los Profesionales, los Turnos, los Pacientes y el mismo sistema. 
+
+![](./src/assets/mostrar-informe-clinica.gif) muestra y descarga de informes
 
 ## búsqueda de información
 Los Usuarios van a poder entrar en todo momento a una pestaña con diferentes listados para obtener cierta información. un Paciente y un Administrador tienen la capacidad de filtrar estos listados hasta quedar satisfechos con la búsqueda hecha. 
