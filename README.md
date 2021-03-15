@@ -8,7 +8,7 @@ Una clínica online donde los pacientes y los profesionales se registran para el
 Hay tres tipos de usuarios que interactuan con el sistema:
 
 #### Paciente:
-Es el usuario que solicita los turnos en la clínica. solo tiene que registrarse al sistema con algunos datos personales y verificar su cuenta desde su dirección de correo electrónico. luego de eso el Paciente podrá ingresar al sistema para solicitar turnos
+Es el usuario que solicita los turnos en la clínica. solo tiene que registrarse al sistema con algunos datos personales y verificar su cuenta desde su dirección de correo electrónico. luego de eso el Paciente podrá ingresar al sistema para solicitar turnos.
 
 #### Profesional:
 Es quien va a atender a los pacientes y realizar las historias clínicas de estos luego de cada turno. Tienen una especialidad en al menos una rama de la medicina y una serie de horarios en los cuales van a poder dar turnos. cada día va a estar cubierto para una especialidad en particular y la duración de los turnos va a depender de dicha especialidad.
